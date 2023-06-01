@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MATRIX_ROW_PINS \
     { F7, F6, F5, F4, F1, F0 }
 
-#define DIODE_DIRECTION COL2ROW
+#define DIODE_DIRECTION ROW2COL
 
 // WS2812 RGB LED strip input and number of LEDs
 #define RGB_DI_PIN      D3
