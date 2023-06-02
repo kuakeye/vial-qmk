@@ -15,6 +15,12 @@
  */
 
 #include QMK_KEYBOARD_H
+// Compile command: 
+// qmk flash -kb handwired/tractyl_manuform/5x6_right/elite_c -km default -bl dfu-split-left
+
+#ifdef CONSOLE_ENABLE
+#    include "print.h"
+#endif  // CONSOLE_ENABLE
 
 enum custom_layers {
     _QWERTY,
@@ -23,89 +29,66 @@ enum custom_layers {
     _MOUSE,
 };
 
-
+// Layers
 #define RAISE MO(_RAISE)
 #define LOWER MO(_LOWER)
 
+// Custom codes n combos
+#define KC_WSL LCTL(LGUI(KC_LEFT))
+#define KC_WSR LCTL(LGUI(KC_RIGHT))
+#define SWITCH LGUI(KC_TAB)
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = LAYOUT_5x6_right(
-     KC_ESC , KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                         KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_BSPC,
-     KC_TAB , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,                         KC_Y  , KC_U  , KC_I  , KC_O  , KC_P  ,KC_MINS,
+     KC_GRV , KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                         KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_EQL,
+     KC_TAB , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,                         KC_Y  , KC_U  , KC_I  , KC_O  , KC_P  ,KC_BSLS,
      KC_BSPC, KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,                         KC_H  , KC_J  , KC_K  , KC_L  ,KC_SCLN,KC_QUOT,
-     KC_ESC, KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,                         KC_N  , KC_M  ,KC_COMM,KC_DOT ,KC_SLSH,KC_BSLASH,
+     KC_ESC, KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,                         KC_N  , KC_M  ,KC_COMM,KC_DOT ,KC_SLSH,KC_RSFT,
      KC_LCTL,KC_LGUI, KC_LALT,LOWER,                                                     LOWER, KC_EQL,KC_PLUS, KC_EQL,
                         MT(MOD_LSFT, KC_ENT), KC_DEL,                        KC_RGUI, LT(_RAISE,KC_SPC)
   ),
 
   [_LOWER] = LAYOUT_5x6_right(
-     KC_TILD,KC_F1  , KC_F2 ,KC_F3 , KC_F4 , KC_F5,                          KC_F6  , KC_F7 , KC_F8 , KC_F9 ,KC_F10 ,KC_F11,
-     _______,_______,_______,_______,_______,KC_LBRC,                        KC_RBRC, KC_P7 , KC_P8 , KC_P9 ,_______,KC_PLUS,
-     _______,KC_HOME,KC_PGUP,KC_PGDN,KC_END ,KC_LPRN,                        KC_RPRN, KC_P4 , KC_P5 , KC_P6 ,KC_MINS,KC_PIPE,
-     _______,_______,_______,_______,_______,_______,                        _______, KC_P1 , KC_P2 , KC_P3 ,KC_EQL ,KC_UNDS,
-     _______,_______,_______,_______,                                                         KC_P0 , KC_DOT,_______,_______,
+     KC_TILD,KC_F1  , KC_F2 ,KC_F3 , KC_F4 , KC_F5,                               KC_F6,   KC_F7 , KC_F8 , KC_F9 ,KC_F10 ,KC_F11,
+     _______ ,KC_EXLM ,KC_AT   ,KC_LCBR ,KC_RCBR ,KC_PIPE,                        KC_LT,   KC_P7 , KC_P8 , KC_P9 ,KC_PAST,KC_PLUS,
+     KC_UNDS ,KC_HASH ,KC_DLR  ,KC_LPRN ,KC_RPRN ,KC_GRV,                         KC_GT,   KC_P4 , KC_P5 , KC_P6 ,KC_MINS,KC_EQL,
+     _______ ,KC_PERC ,KC_CIRC ,KC_LBRC ,KC_RBRC ,KC_TILD,                        KC_AMPR, KC_P1 , KC_P2 , KC_P3 ,KC_PPLS,_______,
+     _______,_______,_______,_______,                                                         KC_P0 , KC_DOT,KC_PSLS,_______,
                                              _______,_______,        _______,_______
 
   ),
 
   [_RAISE] = LAYOUT_5x6_right(
-       _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
-       _______,_______,_______,_______,_______,_______,                        _______,_______,KC_VOLU,_______,KC_MPLY ,_______,
-       _______,_______,_______,_______,_______,_______,                        _______,KC_MPRV,KC_VOLD,KC_MNXT,_______,_______,
-       _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
+       QK_BOOT,_______,_______,_______,_______,_______,                        _______,_______,_______,KC_MPRV,KC_MNXT,KC_VOLU,
+       _______,_______,_______,_______,_______,_______,                        _______,_______,SWITCH,_______,KC_MPLY ,KC_VOLD,
+       _______,_______,_______,_______,_______,_______,                        _______,KC_WSL,_______,KC_WSR,_______,_______,
+       _______,_______,_______,_______,_______,_______,                        _______,_______,KC_HOME,KC_PGDN,KC_PGUP,KC_END,
        _______,_______,_______,_______,                                                        KC_LEFT,KC_DOWN, KC_UP ,KC_RIGHT,
-                                             _______,_______,        _______,_______
+                                             DRGSCRL,_______,        _______,_______
   ),
 
     [_MOUSE] = LAYOUT_5x6_right(
        _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
        _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
-       _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
        _______,_______,_______,_______,_______,_______,                        _______,KC_MS_BTN1,KC_MS_BTN2,KC_MS_BTN3,_______,_______,
+       _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
        _______,_______,_______,_______,                                                        _______,_______,_______,_______,
                                              _______,_______,        _______,_______
   ),
 };
 
 void keyboard_post_init_user(void) {
-#ifdef CONSOLE_ENABLE
+// #ifdef CONSOLE_ENABLE
     debug_enable=true;
     debug_matrix=true;
     debug_keyboard=true;
     debug_mouse=true;
-#else
-    debug_enable=false;
-    debug_matrix=false;
-    debug_keyboard=false;
-    debug_mouse=false;
-#endif
-};
-
-static bool scrolling_mode = false;
-
-layer_state_t layer_state_set_user(layer_state_t state) {
-    switch (get_highest_layer(state)) {
-        case _LOWER:  // If we're on the _RAISE layer enable scrolling mode
-            scrolling_mode = true;
-            pointing_device_set_cpi(2000);
-            break;
-        default:
-            if (scrolling_mode) {  // check if we were scrolling before and set disable if so
-                scrolling_mode = false;
-                pointing_device_set_cpi(8000);
-            }
-            break;
-    }
-    return state;
-};
-
-report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
-    if (scrolling_mode) {
-        mouse_report.h = mouse_report.x;
-        mouse_report.v = mouse_report.y;
-        mouse_report.x = 0;
-        mouse_report.y = 0;
-    }
-    return mouse_report;
+// #else
+//     debug_enable=false;
+//     debug_matrix=false;
+//     debug_keyboard=false;
+//     debug_mouse=false;
+// #endif
 };
 
 /* For when dual trackballs arrive
