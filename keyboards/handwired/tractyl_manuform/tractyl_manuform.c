@@ -24,19 +24,19 @@
 
 #ifdef POINTING_DEVICE_ENABLE
 #    ifndef CHARYBDIS_MINIMUM_DEFAULT_DPI
-#        define CHARYBDIS_MINIMUM_DEFAULT_DPI 400
+#        define CHARYBDIS_MINIMUM_DEFAULT_DPI 90
 #    endif  // CHARYBDIS_MINIMUM_DEFAULT_DPI
 
 #    ifndef CHARYBDIS_DEFAULT_DPI_CONFIG_STEP
-#        define CHARYBDIS_DEFAULT_DPI_CONFIG_STEP 100
+#        define CHARYBDIS_DEFAULT_DPI_CONFIG_STEP 90
 #    endif  // CHARYBDIS_DEFAULT_DPI_CONFIG_STEP
 
 #    ifndef CHARYBDIS_MINIMUM_SNIPING_DPI
-#        define CHARYBDIS_MINIMUM_SNIPING_DPI 50
+#        define CHARYBDIS_MINIMUM_SNIPING_DPI 40
 #    endif  // CHARYBDIS_MINIMUM_SNIPER_MODE_DPI
 
 #    ifndef CHARYBDIS_SNIPING_DPI_CONFIG_STEP
-#        define CHARYBDIS_SNIPING_DPI_CONFIG_STEP 100
+#        define CHARYBDIS_SNIPING_DPI_CONFIG_STEP 101
 #    endif  // CHARYBDIS_SNIPING_DPI_CONFIG_STEP
 
 // Fixed DPI for drag-scroll.
@@ -45,7 +45,7 @@
 #    endif  // CHARYBDIS_DRAGSCROLL_DPI
 
 #    ifndef CHARYBDIS_DRAGSCROLL_BUFFER_SIZE
-#        define CHARYBDIS_DRAGSCROLL_BUFFER_SIZE 6
+#        define CHARYBDIS_DRAGSCROLL_BUFFER_SIZE 10 //6
 #    endif  // !CHARYBDIS_DRAGSCROLL_BUFFER_SIZE
 
 #    ifndef CHARYBDIS_POINTER_ACCELERATION_FACTOR
@@ -84,7 +84,7 @@ static void read_charybdis_config_from_eeprom(charybdis_config_t* config) {
  * Note that all values are written verbatim, including whether drag-scroll
  * and/or sniper mode are enabled.  `read_charybdis_config_from_eeprom(…)`
  * resets these 2 values to `false` since it does not make sense to persist
- * these across reboots of the board.
+ * these across reboots of the board. 
  */
 static void write_charybdis_config_to_eeprom(charybdis_config_t* config) { eeconfig_update_kb(config->raw); }
 
