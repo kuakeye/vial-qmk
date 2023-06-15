@@ -28,6 +28,7 @@
 #endif
 
 #include "quantum.h"
+#include "tractyl_manuform.h"
 
 #define ___ KC_NO
 

@@ -45,21 +45,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define ENCODERS_PAD_B \
     { C7 }
 
-/* PMW33XX Settings */
-#define PMW33XX_CS_PIN B6
 
-// Added Defines from Discord
-#define SPLIT_LAYER_STATE_ENABLE
-#define SPLIT_TRANSACTION_IDS_KB RPC_ID_KB_CONFIG_SYNC
-
-#define SPLIT_POINTING_ENABLE
-#define ROTATIONAL_TRANSFORM_ANGLE  -25
-#define POINTING_DEVICE_INVERT_Y
-#define POINTING_DEVICE_RIGHT
-#define POINTING_DEVICE_TASK_THROTTLE_MS 1
-#define PMW33XX_LIFTOFF_DISTANCE 0x06
-
-#define POINTING_DEVICE_AUTO_MOUSE_ENABLE
-#define AUTO_MOUSE_DEFAULT_LAYER 3
-
-#define CHARYBDIS_DRAGSCROLL_REVERSE_Y

@@ -15,9 +15,9 @@
  */
 
 #include QMK_KEYBOARD_H
+#include "5x6_right.h"
 // Compile command: 
 // qmk flash -kb handwired/tractyl_manuform/5x6_right/elite_c -km default -bl dfu-split-left
-
 #ifdef CONSOLE_ENABLE
 #    include "print.h"
 #endif  // CONSOLE_ENABLE
@@ -29,6 +29,15 @@ enum custom_layers {
     _MOUSE,
 };
 
+// Trackball mode switching keycodes
+enum custom_keycodes {
+    SCROLL,
+    ARROWS,
+};
+bool set_scrolling = false;
+bool set_arrows = false;
+
+
 // Layers
 #define RAISE MO(_RAISE)
 #define LOWER MO(_LOWER)
@@ -37,6 +46,12 @@ enum custom_layers {
 #define KC_WSL LCTL(LGUI(KC_LEFT))
 #define KC_WSR LCTL(LGUI(KC_RIGHT))
 #define SWITCH LGUI(KC_TAB)
+
+// TODOS
+// 1. Make a hyper shortcut that is dedicated to launching apps. 
+  // Hyper+...
+    // E = email, T = texts, B = browser, C = calendar, M = music, R = reminders, G = bible, W = weather
+
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = LAYOUT_5x6_right(
@@ -62,50 +77,106 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        QK_BOOT,_______,_______,_______,_______,_______,                        _______,_______,_______,KC_MPRV,KC_MNXT,KC_VOLU,
        _______,_______,_______,_______,_______,_______,                        _______,_______,SWITCH,_______,KC_MPLY ,KC_VOLD,
        _______,_______,_______,_______,_______,_______,                        _______,KC_WSL,_______,KC_WSR,_______,_______,
-       _______,_______,_______,_______,_______,_______,                        _______,_______,KC_HOME,KC_PGDN,KC_PGUP,KC_END,
+       _______,SCROLL ,ARROWS ,_______,_______,_______,                        _______,_______,KC_HOME,KC_PGDN,KC_PGUP,KC_END,
        _______,_______,_______,_______,                                                        KC_LEFT,KC_DOWN, KC_UP ,KC_RIGHT,
-                                             DRGSCRL,_______,        _______,_______
+                                             _______,_______,        _______,_______
   ),
 
     [_MOUSE] = LAYOUT_5x6_right(
        _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
        _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
-       _______,_______,_______,_______,_______,_______,                        _______,KC_MS_BTN1,KC_MS_BTN2,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,
+       _______,SCROLL,ARROWS,_______,_______,_______,                        _______,KC_MS_BTN1,KC_MS_BTN2,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,
        _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
        _______,_______,_______,_______,                                                        _______,_______,_______,_______,
                                              _______,_______,        _______,_RAISE
   ),
 };
 
-void keyboard_post_init_user(void) {
-// #ifdef CONSOLE_ENABLE
-    debug_enable=true;
-    debug_matrix=true;
-    debug_keyboard=true;
-    debug_mouse=true;
-// #else
-//     debug_enable=false;
-//     debug_matrix=false;
-//     debug_keyboard=false;
-//     debug_mouse=false;
-// #endif
-};
+/* For when dual trackballs arrive, insert this for dual trackball support. Want to make left trackball into multi-function ball: 
+Press A = go back to regular scrolling
+Press S = 
+Press D = cursor moving
+So there won't be a 'default' layer, but a bunch of toggles between these different functions. That is the hope. 
 
-/* For when dual trackballs arrive
 // source: https://docs.qmk.fm/#/feature_pointing_device
+*/
 void keyboard_post_init_user(void) {
-    pointing_device_set_cpi_on_side(true, 1000); //Set cpi on left side to a low value for slower scrolling.
-    pointing_device_set_cpi_on_side(false, 8000); //Set cpi on right side to a reasonable value for mousing.
+    pointing_device_set_cpi_on_side(true, 300); //Set cpi on left side to a low value for slower scrolling.
+    pointing_device_set_cpi_on_side(false, 101); //Set cpi on right side to a reasonable value for mousing.
 }
+
+#define CHARYBDIS_DRAGSCROLL_BUFFER_SIZE 15
+#define CHARYBDIS_POINTER_ACCELERATION_FACTOR 24
+#define DISPLACEMENT_WITH_ACCELERATION(d) (CONSTRAIN_HID(d > 0 ? d * d / CHARYBDIS_POINTER_ACCELERATION_FACTOR + d : -d * d / CHARYBDIS_POINTER_ACCELERATION_FACTOR + d))
+
+
 
 report_mouse_t pointing_device_task_combined_user(report_mouse_t left_report, report_mouse_t right_report) {
-    left_report.h = left_report.x;
-    left_report.v = left_report.y;
-    left_report.x = 0;
-    left_report.y = 0;
+    static int16_t scroll_buffer_x = 0;
+    static int16_t scroll_buffer_y = 0;
+    static report_mouse_t temp_report; 
+
+    if (!(has_mouse_report_changed(&temp_report,&left_report)))
+    {
+      return pointing_device_combine_reports(left_report, right_report);
+    }
+
+    if ((left_report.x == 0) && (left_report.y == 0 ))
+    {
+      return pointing_device_combine_reports(left_report, right_report);
+    }
+    
+    if (set_scrolling)
+    {
+      scroll_buffer_x += left_report.x;
+      scroll_buffer_y -= left_report.y;
+
+      left_report.x = 0;
+      left_report.y = 0;
+
+
+      if (abs(scroll_buffer_x) > CHARYBDIS_DRAGSCROLL_BUFFER_SIZE) {
+        left_report.h = scroll_buffer_x > 0 ? 1 : -1;
+        scroll_buffer_x = 0;
+      }
+      if (abs(scroll_buffer_y) > CHARYBDIS_DRAGSCROLL_BUFFER_SIZE) {
+        left_report.v = scroll_buffer_y > 0 ? 1 : -1;
+        scroll_buffer_y = 0;
+      }
+    }
+
+    if (set_arrows)
+    {
+
+      if (left_report.y < 0) 
+      {
+        tap_code(KC_VOLU);
+      }
+      else if (left_report.y > 0) 
+      {
+        tap_code(KC_VOLD);
+      }
+
+    }
+    
+    temp_report = left_report;
     return pointing_device_combine_reports(left_report, right_report);
 }
-*/
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (keycode == SCROLL && record->event.pressed) {
+        set_scrolling = !set_scrolling;
+    }
+    if (keycode == ARROWS && record->event.pressed) {
+        set_arrows = !set_arrows;
+    }
+    return true;
+}
+
+void pointing_device_init_user(void) {
+    set_auto_mouse_layer(_MOUSE); // only required if AUTO_MOUSE_DEFAULT_LAYER is not set to index of <mouse_layer>
+    set_auto_mouse_enable(true);         // always required before the auto mouse feature will work
+};
 
 /* Blank layer template
   [_RAISE] = LAYOUT_5x6_right(
@@ -118,8 +189,3 @@ report_mouse_t pointing_device_task_combined_user(report_mouse_t left_report, re
   ),
 
 */
-
-void pointing_device_init_user(void) {
-    set_auto_mouse_layer(_MOUSE); // only required if AUTO_MOUSE_DEFAULT_LAYER is not set to index of <mouse_layer>
-    set_auto_mouse_enable(true);         // always required before the auto mouse feature will work
-};
