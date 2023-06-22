@@ -27,25 +27,41 @@ enum custom_layers {
     _LOWER,
     _RAISE,
     _MOUSE,
+    _HYPER,
 };
 
 // Trackball mode switching keycodes
 enum custom_keycodes {
-    SCROLL,
-    ARROWS,
+    _SCROLL,
+    _ARROWS,
 };
 bool set_scrolling = false;
-bool set_arrows = false;
+bool set_arrows = true;
 
 
 // Layers
 #define RAISE MO(_RAISE)
 #define LOWER MO(_LOWER)
+#define HYPER MO(_HYPER)
 
 // Custom codes n combos
+// Part 1: window management
 #define KC_WSL LCTL(LGUI(KC_LEFT))
 #define KC_WSR LCTL(LGUI(KC_RIGHT))
 #define SWITCH LGUI(KC_TAB)
+#define MOUSESEMI LT(_MOUSE,KC_SCLN) 
+
+// Part 2: Code
+#define REFS LCTL(LSFT(KC_G))
+
+// Part 3: Hypers - used with Keyboard Maestro (https://www.keyboardmaestro.com/)
+#define ARC    HYPR(KC_A)
+#define TEXTS  HYPR(KC_T)
+#define BIBLE  HYPR(KC_B)
+#define FINDER HYPR(KC_F)
+#define EMAIL  HYPR(KC_E)
+#define CAL    HYPR(KC_C)
+
 
 // TODOS
 // 1. Make a hyper shortcut that is dedicated to launching apps. 
@@ -56,11 +72,11 @@ bool set_arrows = false;
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = LAYOUT_5x6_right(
      KC_GRV , KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                         KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_EQL,
-     KC_TAB , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,                         KC_Y  , KC_U  , KC_I  , KC_O  , KC_P  ,KC_BSLS,
-     KC_BSPC, KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,                         KC_H  , KC_J  , KC_K  , KC_L  ,KC_SCLN,KC_QUOT,
+     KC_TAB, KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,                         KC_Y  , KC_U  , KC_I  , KC_O  , KC_P  ,KC_BSLS,
+     KC_BSPC, KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,                         KC_H  , KC_J  , KC_K  , KC_L  ,MOUSESEMI,KC_QUOT,
      KC_ESC, KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,                         KC_N  , KC_M  ,KC_COMM,KC_DOT ,KC_SLSH,KC_RSFT,
-     KC_LCTL,KC_LGUI, KC_LALT,LOWER,                                                     LOWER, KC_EQL,KC_PLUS, KC_EQL,
-                        MT(MOD_LSFT, KC_ENT), KC_DEL,                        KC_RGUI, LT(_RAISE,KC_SPC)
+     KC_LCTL,KC_LGUI, KC_LALT,LOWER,                                                     LOWER, HYPER,_ARROWS, KC_EQL,
+                        MT(MOD_LSFT, KC_ENT), LT(_RAISE,KC_DEL),                         KC_RGUI, LT(_RAISE,KC_SPC)
   ),
 
   [_LOWER] = LAYOUT_5x6_right(
@@ -76,19 +92,28 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_RAISE] = LAYOUT_5x6_right(
        QK_BOOT,_______,_______,_______,_______,_______,                        _______,_______,_______,KC_MPRV,KC_MNXT,KC_VOLU,
        _______,_______,_______,_______,_______,_______,                        _______,_______,SWITCH,_______,KC_MPLY ,KC_VOLD,
-       _______,_______,_______,_______,_______,_______,                        _______,KC_WSL,_______,KC_WSR,_______,_______,
-       _______,SCROLL ,ARROWS ,_______,_______,_______,                        _______,_______,KC_HOME,KC_PGDN,KC_PGUP,KC_END,
-       _______,_______,_______,_______,                                                        KC_LEFT,KC_DOWN, KC_UP ,KC_RIGHT,
+       _______,_______,_SCROLL,_______,_______,_______,                         _______,KC_WSL,KC_UP,KC_WSR,_______,_______,
+       _______,KC_F10,_______,_______,_______,_______,                        _______,KC_LEFT ,KC_DOWN,KC_RIGHT,_______,_______,
+       _______,KC_F12,LSFT(KC_F12),REFS,                                       KC_HOME,KC_PGDOWN, KC_PGUP,KC_END,
                                              _______,_______,        _______,_______
-  ),
-
+  ), 
+  
     [_MOUSE] = LAYOUT_5x6_right(
        _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
        _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
-       _______,SCROLL,ARROWS,_______,_______,_______,                        _______,KC_MS_BTN1,KC_MS_BTN2,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,
+       _______,_______,_______,_______,_______,_______,                        _______,KC_MS_BTN1,KC_MS_BTN2,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,
        _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
        _______,_______,_______,_______,                                                        _______,_______,_______,_______,
-                                             _______,_______,        _______,_RAISE
+                                               _______,_RAISE,                 _______,_RAISE
+  ),
+
+    [_HYPER] = LAYOUT_5x6_right(
+       _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
+       _______,_______,_______, EMAIL ,_______, TEXTS ,                        _______,_______,_______,_______,_______,_______,
+       _______,  ARC  ,_______,_______,FINDER ,_______,                        _______,_______,_______,_______,_______,_______,
+       _______,_______,_______,  CAL  ,_______, BIBLE ,                        _______,_______,_______,_______,_______,_______,
+       _______,_______,_______,_______,                                                        _______,_______,_______,_______,
+                                             _______,_______,        _______,_______
   ),
 };
 
@@ -144,34 +169,18 @@ report_mouse_t pointing_device_task_combined_user(report_mouse_t left_report, re
         scroll_buffer_y = 0;
       }
     }
-
-    if (set_arrows)
-    {
-
-      if (left_report.y < 0) 
-      {
-        tap_code(KC_VOLU);
-      }
-      else if (left_report.y > 0) 
-      {
-        tap_code(KC_VOLD);
-      }
-
-    }
-    
     temp_report = left_report;
     return pointing_device_combine_reports(left_report, right_report);
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (keycode == SCROLL && record->event.pressed) {
+    if (keycode == _SCROLL && record->event.pressed) {
         set_scrolling = !set_scrolling;
     }
-    if (keycode == ARROWS && record->event.pressed) {
+    else if (keycode == _ARROWS && record->event.pressed) {
         set_arrows = !set_arrows;
     }
-    return true;
-}
+    return true;}
 
 void pointing_device_init_user(void) {
     set_auto_mouse_layer(_MOUSE); // only required if AUTO_MOUSE_DEFAULT_LAYER is not set to index of <mouse_layer>

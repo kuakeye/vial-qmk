@@ -31,7 +31,7 @@
 #    define AUTO_MOUSE_DEFAULT_LAYER 1
 #endif
 #ifndef AUTO_MOUSE_TIME
-#    define AUTO_MOUSE_TIME 650
+#    define AUTO_MOUSE_TIME 500
 #endif
 #ifndef AUTO_MOUSE_DELAY
 #    define AUTO_MOUSE_DELAY GET_TAPPING_TERM(KC_MS_BTN1, &(keyrecord_t){})
