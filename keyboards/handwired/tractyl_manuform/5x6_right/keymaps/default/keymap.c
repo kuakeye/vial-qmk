@@ -94,18 +94,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_RAISE] = LAYOUT_5x6_right(
        QK_BOOT,_______,_______,_______,_______,_______,                        _______,_______,_______,KC_MPRV,KC_MNXT,KC_VOLU,
-       _______,_______,_______,_______,_______,_______,                        _______,_______,SWITCH,_______,KC_MPLY ,KC_VOLD,
+       QK_BOOT,_______,_______,_______,_______,_______,                        _______,_______,SWITCH,_______,KC_MPLY ,KC_VOLD,
        _______,_______,_SCROLL,_______,_______,_______,                         _______,KC_WSL,KC_UP,KC_WSR,_______,_______,
-       _______,KC_F11 ,KC_F10 ,LSFT(KC_F11),_______,_______,                        _______,KC_LEFT ,KC_DOWN,KC_RIGHT,_______,_______,
+       _______,KC_F11 ,KC_F10 ,LSFT(KC_F11),_TRPLCLK,_DBLCLK,                        _______,KC_LEFT ,KC_DOWN,KC_RIGHT,_______,_______,
        _______,KC_F12,LSFT(KC_F12),REFS,                                       KC_HOME,KC_PGDOWN, KC_PGUP,KC_END,
                                              _______,_______,        _______,_______
   ), 
   
     [_MOUSE] = LAYOUT_5x6_right(
        _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
-       _______,_______,_______,_______,_______,_TRPLCLK,                        _TRPLCLK,_______,_______,_______,_______,_______,
-       _DBLCLK,KC_MS_BTN1,KC_MS_BTN2,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,         _DBLCLK,KC_MS_BTN1,KC_MS_BTN2,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,
-       _______,KC_MS_BTN1,KC_MS_BTN2,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,         KC_MS_BTN1,KC_MS_BTN2,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,_______,
+       _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
+       _______,_______,_______,_______,_______,_______,                         _______,KC_MS_BTN1,KC_MS_BTN2,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,
+       _______,_______,_______,_______,_______,_______,                     KC_MS_BTN1,KC_MS_BTN2,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,_______,
        _______,_______,_______,_______,                                                        _______,_______,_______,_______,
                                                _______,_RAISE,                 _______,_RAISE
   ),
@@ -185,10 +185,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         set_arrows = !set_arrows;
     }
     else if (keycode == _DBLCLK && record->event.pressed) {
-        SEND_STRING(SS_TAP(KC_MS_BTN1) SS_DELAY(15) SS_TAP(KC_MS_BTN1));
+        SEND_STRING(SS_TAP(X_BTN1) SS_TAP(X_BTN1));
+        // SEND_STRING("{}" SS_TAP(X_LEFT));
     }
     else if (keycode == _DBLCLK && record->event.pressed) {
-        SEND_STRING(SS_TAP(KC_MS_BTN1) SS_DELAY(15) SS_TAP(KC_MS_BTN1) SS_DELAY(15) SS_TAP(KC_MS_BTN1));
+        SEND_STRING(SS_TAP(X_BTN1) SS_TAP(X_BTN1) SS_TAP(X_BTN1));
     }
     return true;}
 

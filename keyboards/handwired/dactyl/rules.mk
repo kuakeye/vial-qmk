@@ -18,6 +18,8 @@ NKRO_ENABLE = yes           # Enable N-Key Rollover
 UNICODE_ENABLE          = yes # Unicode
 SWAP_HANDS_ENABLE       = yes # Allow swapping hands of keyboard
 RGBLIGHT_ENABLE         = no
+SEND_STRING_ENABLE      = yes
+
 
 # project specific files
 QUANTUM_LIB_SRC += i2c_master.c
