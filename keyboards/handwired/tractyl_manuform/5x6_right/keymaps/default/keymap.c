@@ -30,11 +30,14 @@ enum custom_layers {
     _HYPER,
 };
 
-// Trackball mode switching keycodes
+// Trackball mode switching keycodes and other keyboard macros
 enum custom_keycodes {
     _SCROLL,
     _ARROWS,
+    _DBLCLK,
+    _TRPLCLK,
 };
+// Default trackball values on startup
 bool set_scrolling = false;
 bool set_arrows = true;
 
@@ -100,9 +103,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   
     [_MOUSE] = LAYOUT_5x6_right(
        _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
-       _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
-       _______,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
-       _______,_______,_______,_______,_______,_______,                        KC_MS_BTN1,KC_MS_BTN2,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,_______,
+       _______,_______,_______,_______,_______,_TRPLCLK,                        _TRPLCLK,_______,_______,_______,_______,_______,
+       _DBLCLK,KC_MS_BTN1,KC_MS_BTN2,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,         _DBLCLK,KC_MS_BTN1,KC_MS_BTN2,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,
+       _______,KC_MS_BTN1,KC_MS_BTN2,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,         KC_MS_BTN1,KC_MS_BTN2,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,_______,
        _______,_______,_______,_______,                                                        _______,_______,_______,_______,
                                                _______,_RAISE,                 _______,_RAISE
   ),
@@ -132,7 +135,8 @@ void keyboard_post_init_user(void) {
 
 #define CHARYBDIS_DRAGSCROLL_BUFFER_SIZE 15
 #define CHARYBDIS_POINTER_ACCELERATION_FACTOR 24
-#define DISPLACEMENT_WITH_ACCELERATION(d) (CONSTRAIN_HID(d > 0 ? d * d / CHARYBDIS_POINTER_ACCELERATION_FACTOR + d : -d * d / CHARYBDIS_POINTER_ACCELERATION_FACTOR + d))
+#define DISPLACEMENT_WITH_ACCELERATION(d) (CONSTRAIN_HID(d > 0 ? d * d / CHARYBDIS_POINTER_ACCELERATION_FACTOR + \
+                                            d : -d * d / CHARYBDIS_POINTER_ACCELERATION_FACTOR + d))
 
 
 
@@ -179,6 +183,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
     else if (keycode == _ARROWS && record->event.pressed) {
         set_arrows = !set_arrows;
+    }
+    else if (keycode == _DBLCLK && record->event.pressed) {
+        SEND_STRING(SS_TAP(KC_MS_BTN1) SS_DELAY(15) SS_TAP(KC_MS_BTN1));
+    }
+    else if (keycode == _DBLCLK && record->event.pressed) {
+        SEND_STRING(SS_TAP(KC_MS_BTN1) SS_DELAY(15) SS_TAP(KC_MS_BTN1) SS_DELAY(15) SS_TAP(KC_MS_BTN1));
     }
     return true;}
 
