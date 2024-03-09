@@ -18,20 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include "config_common.h"
-
-/* key matrix size */
-// Rows are doubled-up
-#define MATRIX_ROWS                 12
-#define MATRIX_COLS                 6
-
-#define DIODE_DIRECTION             ROW2COL
-
-/* Bootmagic Lite key configuration */
-#define BOOTMAGIC_LITE_ROW          0
-#define BOOTMAGIC_LITE_COLUMN       0
-#define BOOTMAGIC_LITE_ROW_RIGHT    6
-#define BOOTMAGIC_LITE_COLUMN_RIGHT 5
+#define ROTATIONAL_TRANSFORM_ANGLE  -25
+#define POINTING_DEVICE_INVERT_X
 
 #define DYNAMIC_KEYMAP_LAYER_COUNT  16
 #define LAYER_STATE_16BIT
@@ -42,5 +30,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define NO_ACTION_TAPPING
 //#define NO_ACTION_ONESHOT
 
-
-
+#define POINTING_DEVICE_RIGHT

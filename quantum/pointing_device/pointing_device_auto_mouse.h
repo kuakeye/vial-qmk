@@ -16,11 +16,14 @@
 
 #pragma once
 
-#include <string.h>
-
-#include "quantum.h"
+#include <stdint.h>
+#include <stdbool.h>
 #include "pointing_device.h"
-#include "print.h"
+#include "keycodes.h"
+#include "action.h"
+#include "report.h"
+#include "action_layer.h"
+#include "action_tapping.h"
 
 /* check settings and set defaults */
 #ifndef POINTING_DEVICE_AUTO_MOUSE_ENABLE
@@ -31,7 +34,7 @@
 #    define AUTO_MOUSE_DEFAULT_LAYER 1
 #endif
 #ifndef AUTO_MOUSE_TIME
-#    define AUTO_MOUSE_TIME 500
+#    define AUTO_MOUSE_TIME 650
 #endif
 #ifndef AUTO_MOUSE_DELAY
 #    define AUTO_MOUSE_DELAY GET_TAPPING_TERM(KC_MS_BTN1, &(keyrecord_t){})
