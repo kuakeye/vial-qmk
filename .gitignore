@@ -95,3 +95,6 @@ compile_commands.json
 .cache/
 lib/chibios
 lib/chibios-contrib
+lib/chibios
+lib/chibios-contrib
+lib/pico-sdk
