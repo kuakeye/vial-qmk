@@ -51,6 +51,34 @@
 #        define CHARYBDIS_DRAGSCROLL_BUFFER_SIZE 6
 #    endif // !CHARYBDIS_DRAGSCROLL_BUFFER_SIZE
 
+#    ifndef CHARYBDIS_POINTER_ACCELERATION_ENABLE
+#        define CHARYBDIS_POINTER_ACCELERATION_ENABLE true
+#    endif  // !CHARYBDIS_POINTER_ACCELERATION_ENABLE
+
+#    ifndef CHARYBDIS_POINTER_ACCELERATION_FACTOR
+#        define CHARYBDIS_POINTER_ACCELERATION_FACTOR 24
+#    endif  // !CHARYBDIS_POINTER_ACCELERATION_FACTOR
+
+#    ifndef CONSTRAIN_HID
+#        define CONSTRAIN_HID(value) ((value) < XY_REPORT_MIN ? XY_REPORT_MIN : ((value) > XY_REPORT_MAX ? XY_REPORT_MAX : (value)))
+#    endif  // !CONSTRAIN_HID
+
+/**
+ * \brief Add optional acceleration effect.
+ *
+ * If `CHARYBDIS_ENABLE_POINTER_ACCELERATION` is defined, add a simple and naive
+ * acceleration effect to the provided value.  Return the value unchanged
+ * otherwise.
+ */
+#    ifndef DISPLACEMENT_WITH_ACCELERATION
+#        ifdef CHARYBDIS_POINTER_ACCELERATION_ENABLE
+#            define DISPLACEMENT_WITH_ACCELERATION(d) (CONSTRAIN_HID(d > 0 ? d * d / CHARYBDIS_POINTER_ACCELERATION_FACTOR + d : -d * d / CHARYBDIS_POINTER_ACCELERATION_FACTOR + d))
+#        else  // !CHARYBDIS_POINTER_ACCELERATION_ENABLE
+#            define DISPLACEMENT_WITH_ACCELERATION(d) (d)
+#        endif  // CHARYBDIS_POINTER_ACCELERATION_ENABLE
+#    endif      // !DISPLACEMENT_WITH_ACCELERATION
+
+
 typedef union {
     uint8_t raw;
     struct {
@@ -181,40 +209,49 @@ void charybdis_set_pointer_dragscroll_enabled(bool enable) {
  *
  * Implement drag-scroll.
  */
-static void pointing_device_task_charybdis(report_mouse_t* mouse_report) {
-    static int16_t scroll_buffer_x = 0;
-    static int16_t scroll_buffer_y = 0;
-    if (g_charybdis_config.is_dragscroll_enabled) {
-#    ifdef CHARYBDIS_DRAGSCROLL_REVERSE_X
-        scroll_buffer_x -= mouse_report->x;
-#    else
-        scroll_buffer_x += mouse_report->x;
-#    endif // CHARYBDIS_DRAGSCROLL_REVERSE_X
-#    ifdef CHARYBDIS_DRAGSCROLL_REVERSE_Y
-        scroll_buffer_y -= mouse_report->y;
-#    else
-        scroll_buffer_y += mouse_report->y;
-#    endif // CHARYBDIS_DRAGSCROLL_REVERSE_Y
-        mouse_report->x = 0;
-        mouse_report->y = 0;
-        if (abs(scroll_buffer_x) > CHARYBDIS_DRAGSCROLL_BUFFER_SIZE) {
-            mouse_report->h = scroll_buffer_x > 0 ? 1 : -1;
-            scroll_buffer_x = 0;
-        }
-        if (abs(scroll_buffer_y) > CHARYBDIS_DRAGSCROLL_BUFFER_SIZE) {
-            mouse_report->v = scroll_buffer_y > 0 ? 1 : -1;
-            scroll_buffer_y = 0;
-        }
-    }
+
+void keyboard_post_init_user(void) {
+    pointing_device_set_cpi_on_side(true, 102); //Set cpi on left side to a low value for slower scrolling.
+    pointing_device_set_cpi_on_side(false, 1600); //Set cpi on right side to a reasonable value for mousing.
 }
 
-report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
-    if (is_keyboard_master()) {
-        pointing_device_task_charybdis(&mouse_report);
-        mouse_report = pointing_device_task_user(mouse_report);
-    }
-    return mouse_report;
+// static int accumulated_x = 0;
+// static int accumulated_y = 0;
+// const int threshold = 100; // Threshold for accumulated movement
+
+// report_mouse_t pointing_device_task_combined_user(report_mouse_t left_report, report_mouse_t right_report) {
+//     accumulated_x += left_report.x;
+//     accumulated_y += left_report.y;
+
+//     if (abs(accumulated_x) >= threshold) {
+//         left_report.h = left_report.x; // Scroll horizontally with the same units as left_report.x
+//     } else {
+//         left_report.h = 0; // No horizontal scroll
+//         accumulated_x = (abs(accumulated_x) < threshold) ? 0 : accumulated_x; // Reset accumulated_x if it no longer meets the threshold
+//     }
+
+//     if (abs(accumulated_y) >= threshold) {
+//         left_report.v = left_report.y; // Scroll vertically with the same units as left_report.y
+//     } else {
+//         left_report.v = 0; // No vertical scroll
+//         accumulated_y = (abs(accumulated_y) < threshold) ? 0 : accumulated_y; // Reset accumulated_y if it no longer meets the threshold
+//     }
+
+//     left_report.x = 0; // Neutralize actual mouse movement
+//     left_report.y = 0;
+
+//     return pointing_device_combine_reports(left_report, right_report);
+// }
+
+report_mouse_t pointing_device_task_combined_user(report_mouse_t left_report, report_mouse_t right_report) {
+    left_report.h = left_report.x;
+    left_report.v = left_report.y;
+    left_report.x = 0;
+    left_report.y = 0;
+    return pointing_device_combine_reports(left_report, right_report);
 }
+
+
 
 #    if defined(POINTING_DEVICE_ENABLE) && !defined(NO_CHARYBDIS_KEYCODES)
 /** \brief Whether SHIFT mod is enabled. */
@@ -331,7 +368,7 @@ void charybdis_config_sync_handler(uint8_t initiator2target_buffer_size, const v
 #    endif
 
 void keyboard_post_init_kb(void) {
-    maybe_update_pointing_device_cpi(&g_charybdis_config);
+    maybe_update_pointing_device_cpi(&g_charybdis_config); // this is the code that is slowing down the dragscroll trackball
 #    ifdef CHARYBDIS_CONFIG_SYNC
     transaction_register_rpc(RPC_ID_KB_CONFIG_SYNC, charybdis_config_sync_handler);
 #    endif

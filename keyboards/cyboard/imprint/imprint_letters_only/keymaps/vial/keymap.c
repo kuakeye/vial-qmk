@@ -2,7 +2,22 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
+// To compile: 
+
 #include QMK_KEYBOARD_H
+
+enum custom_keycodes {
+    _SCROLL,
+    _ARROWS,
+    _DBLCLK
+};
+bool set_scrolling = false;
+bool set_arrows = false;
+
+// Custom codes n combos
+#define KC_WSL LCTL(LGUI(KC_LEFT))
+#define KC_WSR LCTL(LGUI(KC_RIGHT))
+#define SWITCH LGUI(KC_TAB)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -15,8 +30,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [1] = LAYOUT_let(
-        _______, _______, _______, _______, _______, _______,                           _______, KC_HOME, KC_UP,   KC_END,  _______, _______,
-        _______, _______, _______, _______, _______, _______,                           _______, KC_LEFT, KC_DOWN, KC_RIGHT, _______, _______,
+        _______, _______, _______, _______, _______, _______,                           _______, KC_HOME, SWITCH,   KC_END,  _______, _______,
+        _______, _SCROLL , _______, _______, _______, _______,                           _______, KC_WSL ,KC_DOWN,   KC_WSR, _______, _______,
         _______, _______, _______, _______, _______, _______,                           _______, _______, _______, _______, _______, _______,
                           _______, _______, _______, _______, _______,         _______, _______, _______, _______, _______,
                                             _______, _______, _______,         _______, _______, _______

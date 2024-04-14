@@ -37,11 +37,14 @@ enum charybdis_keycodes {
 #        define DPI_RMOD POINTER_DEFAULT_DPI_REVERSE
 #        define S_D_MOD POINTER_SNIPING_DPI_FORWARD
 #        define S_D_RMOD POINTER_SNIPING_DPI_REVERSE
-#        define SNIPING SNIPING_MODE
+#        define SNIPING SNIPING_MODE 
 #        define SNP_TOG SNIPING_MODE_TOGGLE
 #        define DRGSCRL DRAGSCROLL_MODE
 #        define DRG_TOG DRAGSCROLL_MODE_TOGGLE
 #    endif // !NO_CHARYBDIS_KEYCODES
+
+report_mouse_t pointing_device_task_combined_user(report_mouse_t left_report, report_mouse_t right_report);
+
 
 /** \brief Return the current DPI value for the pointer's default mode. */
 uint16_t charybdis_get_pointer_default_dpi(void);
