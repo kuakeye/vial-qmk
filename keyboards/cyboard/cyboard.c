@@ -212,7 +212,7 @@ void charybdis_set_pointer_dragscroll_enabled(bool enable) {
 
 void keyboard_post_init_user(void) {
     pointing_device_set_cpi_on_side(true, 102); //Set cpi on left side to a low value for slower scrolling.
-    pointing_device_set_cpi_on_side(false, 1600); //Set cpi on right side to a reasonable value for mousing.
+    pointing_device_set_cpi_on_side(false, 2000); //Set cpi on right side to a reasonable value for mousing.
 }
 
 // static int accumulated_x = 0;
@@ -244,7 +244,7 @@ void keyboard_post_init_user(void) {
 // }
 
 report_mouse_t pointing_device_task_combined_user(report_mouse_t left_report, report_mouse_t right_report) {
-    left_report.h = left_report.x;
+    left_report.h = -left_report.x;
     left_report.v = left_report.y;
     left_report.x = 0;
     left_report.y = 0;
